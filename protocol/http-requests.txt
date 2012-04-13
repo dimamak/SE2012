@@ -1,0 +1,55 @@
+entry
+	action = entry
+	
+registration
+	action = register
+	username,password,fname,sname,email
+
+login
+	action = login
+	username,password
+
+logout
+	action = logout
+	
+view forum
+	action = viewforum
+	forumid
+
+view message
+	action = viewmessage
+	messageid
+
+view forum list
+	action = home
+	
+publish
+	action = publish
+	forumid, threadid(if 0 then new thread), 
+	messageid(if not 0 edit existing message),
+	title, content
+	
+
+search
+	action = search
+	username(to search it), content
+	
+add friend???
+	action = addfriend
+	username
+
+banning
+	action = ban
+	username, till(if 0 - forever)
+	
+set moderator
+	action = setmoderator
+	forumid, username
+	
+suspend moderator
+	action = suspendmoder
+	forumid, username, till(if 0 - forever)
+	
+set admin
+	action = setadmin
+	username
