@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.example.org/NewXMLSchema" xmlns:tns="http://www.example.org/NewXMLSchema" elementFormDefault="qualified">
+
+    <complexType name="REQUEST_MSG">
+    	<choice maxOccurs="1" minOccurs="1">
+    		<element name="TYPE" type="tns:ENTRY"></element>
+    		<element name="TYPE" type="tns:REGISTER"></element>
+    		<element name="TYPE" type="tns:LOGIN"></element>
+    		<element name="TYPE" type="tns:LOGOUT"></element>
+    		<element name="TYPE" type="tns:VIEW_FORUM"></element>
+    		<element name="TYPE" type="tns:VIEW_MESSAGE"></element>
+    		<element name="TYPE" type="tns:GO_HOMEPAGE"></element>
+    		<element name="TYPE" type="tns:PUBLISH"></element>
+    		<element name="TYPE" type="tns:SEARCH"></element>
+    		<element name="TYPE" type="tns:ADD_FRIEND"></element>
+    		<element name="TYPE" type="tns:REMOVE_FRIEND"></element>
+    		<element name="TYPE" type="tns:BAN"></element>
+    		<element name="TYPE" type="tns:ADD_MODERATOR"></element>
+    		<element name="TYPE" type="tns:REMOVE_MODERATOR"></element>
+    		<element name="TYPE" type="tns:ADD_ADMIN"></element>
+    		<element name="TYPE" type="tns:REMOVE_ADMIN"></element>
+    	</choice>
+    </complexType>
+
+    <complexType name="ENTRY"></complexType>
+
+    <complexType name="REGISTER">
+    	<sequence>
+    		<element name="Username" type="string"></element>
+    		<element name="Password" type="string"></element>
+    		<element name="Fname" type="string"></element>
+    		<element name="Lname" type="string"></element>
+    		<element name="Email" type="string"></element>
+    	</sequence>
+    </complexType>
+    
+    <complexType name="LOGIN">
+    	<sequence>
+    		<element name="Username" type="string"></element>
+    		<element name="Password" type="string"></element>
+    	</sequence>
+    </complexType>
+    
+    <complexType name="LOGOUT"></complexType>
+
+    <complexType name="VIEW_FORUM">
+    	<sequence>
+    		<element name="ForumId" type="int"></element>
+    	</sequence>
+    </complexType>
+    
+    <complexType name="VIEW_MESSAGE">
+    	<sequence>
+    		<element name="MessageId" type="int"></element>
+    	</sequence>
+    </complexType>
+    
+    <complexType name="GO_HOMEPAGE"></complexType>
+
+    <complexType name="PUBLISH">
+    	<sequence>
+    		<element name="ForumId" type="int"></element>
+    		<element name="ThreadId" type="int"></element>
+    		<element name="MessageId" type="int"></element>
+    		<element name="Title" type="string"></element>
+    		<element name="Content" type="string"></element>
+    	</sequence>
+    </complexType>
+    
+    <complexType name="SEARCH">
+    	<sequence>
+    		<element name="Content" type="string"></element>
+    	</sequence>
+    </complexType>
+    
+    <complexType name="ADD_FRIEND">
+    	<sequence>
+    		<element name="Username" type="string"></element>
+    	</sequence>
+    </complexType>
+    
+    <complexType name="REMOVE_FRIEND">
+    	<sequence>
+    		<element name="Username" type="string"></element>
+    	</sequence>
+    </complexType>
+    
+    <complexType name="BAN">
+    	<sequence>
+    		<element name="Username" type="string"></element>
+    		<element name="Till" type="double"></element>
+    	</sequence>
+    </complexType>
+    
+    <complexType name="ADD_MODERATOR">
+    	<sequence>
+    		<element name="ForumId" type="int"></element>
+    		<element name="Username" type="string"></element>
+    	</sequence>
+    </complexType>
+    
+    <complexType name="REMOVE_MODERATOR">
+    	<sequence>
+    		<element name="ForumId" type="int"></element>
+    		<element name="Username" type="string"></element>
+    		<element name="Till" type="double"></element>
+    	</sequence>
+    </complexType>
+    
+    <complexType name="ADD_ADMIN">
+    	<sequence>
+    		<element name="Username" type="string"></element>
+    	</sequence>
+    </complexType>
+    
+    <complexType name="REMOVE_ADMIN">
+    	<sequence>
+    		<element name="Username" type="string"></element>
+    	</sequence>
+    </complexType>
+
+    <complexType name="RESPONSE_MSG">
+    	<sequence>
+    		<element name="State" type="string"></element>
+    		<element name="Description" type="string"></element>
+    	</sequence>
+    </complexType>
+</schema>
