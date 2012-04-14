@@ -23,7 +23,13 @@ public class ActionHandler {
 			Session s = new Session();
 			forum.add_session(s);
 			
-			
+			// Create response
+			ans.get_statusLine().set_statusCode(200);
+			ans.get_statusLine().set_description("OK");
+			ans.add_cookie("SESSID", s.get_id().toString());
+			//ans.add_header("Content-Type", this._server.get_MimeType("html"));
+			//ans.add_header("Content-Length", ((Integer)page.length()).toString());
+			//ans.set_body(page.getBytes());
 		}
 		
 		

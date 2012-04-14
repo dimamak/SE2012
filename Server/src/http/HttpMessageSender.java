@@ -22,6 +22,9 @@ public class HttpMessageSender {
 		// Write status line
 		osw.write(p.get_statusLine().toString());
 		
+		// Write blank line
+		osw.write(_seperator);
+				
 		// Write headers
 		for(Entry<String, String> entry : p.get_headers().entrySet()){
 			osw.write(entry.getKey() + ":" + entry.getValue() + _seperator);
