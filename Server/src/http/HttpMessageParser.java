@@ -29,8 +29,8 @@ public class HttpMessageParser {
 	    toparse = new String(inPkt.get_body());
 
 	/* add get params */
-	if (uri.length() > 2)
-	    toparse = uri.substring(2) + "&" + toparse;
+	if (uri.length() > 2 && uri.indexOf('?')>0)
+	    toparse = uri.substring(uri.indexOf('?')+1) + "&" + toparse;
 
 	if (toparse.length() > 0) {
 	    split_equal = new String[2];
