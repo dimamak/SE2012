@@ -4,6 +4,7 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
+import java.util.Hashtable;
 
 /**
  * HttpMessageParser class is to provide tools for {@link HttpMessage} parsing.
@@ -11,6 +12,38 @@ import java.nio.charset.Charset;
  */
 public class HttpMessageParser {
 
+	/**
+	 * Try to parse {@link HttpMessage} parametrs
+	 * @return {@link HttpRequest} parsed parametrs
+	 */
+	public static Hashtable<String, String> parseRequestParams(HttpRequest inPkt) throws IOException, HttpException {
+	    Hashtable<String, String> params = new Hashtable<String, String>();
+	    RequestLine reqline=inPkt.get_initLine();
+	    String toparse;
+	    String[] split_and,split_equal;
+	    
+	    /* Check method */
+	    if(reqline._method.compareTo("GET")==0)
+		toparse=reqline._uri.substring(2);
+	    else
+		toparse=new String(inPkt.get_body());
+		    
+	    split_equal=new String[2];
+	    split_and=toparse.split("&");
+		
+	    /* for all couples */
+	    for(String couple : split_and){
+		split_equal=couple.split("=");
+		    
+		/* if empty param */
+		if(split_equal.length==1)
+		    params.put(split_equal[0], "");
+		else
+		    params.put(split_equal[0], split_equal[1]);
+	    }
+	    return params;
+	}
+	
 	/**
 	 * Try to parse {@link HttpMessage} from InputStream
 	 * @return {@link HttpRequest} parsed by the function
