@@ -33,7 +33,7 @@ public class ClientRunnable implements Runnable {
 		try {
 			HttpRequest inPkt = null;
 			HttpResponce outPkt = new HttpResponce();
-			
+			ActionHandler acHandler = new ActionHandler();
 			try {
 				// Try to parse incoming request
 				inPkt = HttpMessageParser.parseRequest(this._socket.getInputStream(), "UTF-8");
@@ -42,7 +42,7 @@ public class ClientRunnable implements Runnable {
 				
 				//throw new HttpException(400,"No Host header found in incoming message.");
 
-				outPkt = ActionHandler.processAction(this._server, inPkt);
+				outPkt = acHandler.processAction(this._server, inPkt);
 
 			} catch (HttpException e) {
 				// Create responce packet
