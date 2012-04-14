@@ -44,6 +44,7 @@ public class ClientRunnable implements Runnable {
 				this._params=HttpMessageParser.parseRequestParams(inPkt);
 				//throw new HttpException(400,"No Host header found in incoming message.");
 
+				
 
 
 			} catch (HttpException e) {

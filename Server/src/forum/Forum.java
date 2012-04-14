@@ -7,15 +7,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import structs.SubForum;
+import structs.User;
 
 /**
  * Forum runnable
  * @author Andrey
- * @version 1.0
+ * @version 1.1
  */
 public class Forum implements Runnable{
 	protected ServerSocket _sockFactory;
-	private List<SubForum> _sforums;
+	protected User _admin;
+	protected List<SubForum> _sforums;
+	protected List<Session> _sessions;
 	
 	public Forum(int port) throws IOException{
 		System.out.println("Creating forum listener on port " + port);
@@ -24,6 +27,7 @@ public class Forum implements Runnable{
 		
 		
 		this._sforums = new ArrayList<SubForum>();
+		this._sessions = new ArrayList<Session>();
 	}
 	
 	@Override
