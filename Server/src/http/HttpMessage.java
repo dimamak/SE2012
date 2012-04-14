@@ -1,6 +1,5 @@
 package http;
 import java.util.Hashtable;
-import java.util.Map.Entry;
 
 /**
  * HttpMessage class is to provide basic parameters and functions for http communication
@@ -50,31 +49,4 @@ public abstract class HttpMessage {
 		this._body = _body;
 	}
 	
-	
-	public Hashtable<String, String> get_cookies(){
-		Hashtable<String, String> ans = new Hashtable<String, String>();
-		
-		String cookies = get_headers().get("Cookie");
-		// If Cookie header found
-		if(cookies != null){
-			for(String cookie : cookies.split(";")){
-				String[] c = cookie.split("=");
-				ans.put(c[0], c[1]);
-			}
-		}
-		
-		return ans;
-	}
-	
-	public void add_cookie(String key, String value){
-		Hashtable<String, String> cookies = get_cookies();
-		cookies.put(key, value);
-		
-		String cookieHeaderValue = "";
-		for(Entry<String, String> cookie: cookies.entrySet()){
-			cookieHeaderValue += cookie.getKey() + "=" + cookie.getValue() + ";";
-		}
-		
-		add_header("Cookie", cookieHeaderValue);
-	}
 }

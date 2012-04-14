@@ -1,5 +1,6 @@
 package http;
 
+import java.util.Hashtable;
 import java.util.Map.Entry;
 
 /**
@@ -29,6 +30,21 @@ public class HttpRequest extends HttpMessage{
 		
 		if(this._body != null)
 			ans += "\n" + this._body.toString();
+		
+		return ans;
+	}
+	
+	public Hashtable<String, String> get_cookies(){
+		Hashtable<String, String> ans = new Hashtable<String, String>();
+		
+		String cookies = get_headers().get("cookie");
+		// If Cookie header found
+		if(cookies != null){
+			for(String cookie : cookies.split(";")){
+				String[] c = cookie.split("=");
+				ans.put(c[0], c[1]);
+			}
+		}
 		
 		return ans;
 	}
