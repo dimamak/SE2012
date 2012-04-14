@@ -46,4 +46,29 @@ public class Forum implements Runnable{
 		}
 	}
 
+	public User get_admin() {
+		return _admin;
+	}
+
+	public void set_admin(User _admin) {
+		this._admin = _admin;
+	}
+
+	public List<SubForum> get_sforums() {
+		return _sforums;
+	}
+
+	public void set_sforums(List<SubForum> _sforums) {
+		this._sforums = _sforums;
+	}
+
+	public List<Session> get_sessions() {
+		return _sessions;
+	}
+
+	public void add_session(Session s) {
+		this._sessions.add(s);
+	}
+
+
 }

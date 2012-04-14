@@ -48,4 +48,17 @@ public abstract class HttpMessage {
 	public void set_body(byte[] _body) {
 		this._body = _body;
 	}
+	
+	
+	public Hashtable<String, String> get_cookies(){
+		Hashtable<String, String> ans = new Hashtable<String, String>();
+		
+		String cookieStr = get_headers().get("Cookie");
+		
+		return ans;
+	}
+	
+	public void add_cookie(String name, String value){
+		
+	}
 }
