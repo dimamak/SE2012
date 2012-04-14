@@ -17,7 +17,6 @@ import java.util.Hashtable;
 public class ClientRunnable implements Runnable {
 	protected Socket _socket;
 	protected Forum _server;
-	protected Hashtable<String, String> _params;
 
 	/**
 	 * Class constructor.
@@ -41,11 +40,9 @@ public class ClientRunnable implements Runnable {
 				while(inPkt == null)
 					inPkt = HttpMessageParser.parseRequest(this._socket.getInputStream(), "UTF-8");
 				
-				this._params=HttpMessageParser.parseRequestParams(inPkt);
 				//throw new HttpException(400,"No Host header found in incoming message.");
 
-				
-
+				outPkt = ActionHandler.processAction(this._server, inPkt);
 
 			} catch (HttpException e) {
 				// Create responce packet
