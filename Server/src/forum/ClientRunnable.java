@@ -3,7 +3,7 @@ package forum;
 
 import http.HttpRequest;
 import http.HttpException;
-import http.HttpResponce;
+import http.HttpResponse;
 import java.io.IOException;
 import java.net.Socket;
 
@@ -29,7 +29,7 @@ public class ClientRunnable implements Runnable {
 	public void run() {
 		try {
 			HttpRequest inPkt = null;
-			HttpResponce outPkt = null;
+			HttpResponse outPkt = null;
 			try {
 				// Try to parse incoming request
 				inPkt = CommunicationHandler.receive(this._socket.getInputStream(), "UTF-8");
@@ -40,7 +40,7 @@ public class ClientRunnable implements Runnable {
 
 			} catch (HttpException e) {
 				// Create error responce packet
-				outPkt = new HttpResponce();
+				outPkt = new HttpResponse();
 
 			}
 

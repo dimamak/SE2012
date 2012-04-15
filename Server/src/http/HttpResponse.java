@@ -8,10 +8,10 @@ import java.util.Map.Entry;
  * by http requirements. 
  * @version 1.0
  */
-public class HttpResponce extends HttpMessage{
+public class HttpResponse extends HttpMessage{
 	protected StatusLine _statusLine;
 	
-	public HttpResponce(){
+	public HttpResponse(){
 		this._statusLine = new StatusLine();
 	}
 

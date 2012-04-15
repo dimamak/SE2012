@@ -4,7 +4,9 @@ import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.SocketException;
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.List;
+import java.util.UUID;
 
 import structs.SubForum;
 import structs.User;
@@ -18,7 +20,8 @@ public class Forum implements Runnable{
 	protected ServerSocket _sockFactory;
 	protected User _admin;
 	protected List<SubForum> _sforums;
-	protected List<Session> _sessions;
+	protected Hashtable<UUID,Session> _sessions;
+	protected List<User> _users;
 	
 	public Forum(int port) throws IOException{
 		System.out.println("Creating forum listener on port " + port);
@@ -27,7 +30,7 @@ public class Forum implements Runnable{
 		
 		
 		this._sforums = new ArrayList<SubForum>();
-		this._sessions = new ArrayList<Session>();
+		this._sessions = new Hashtable<UUID, Session>();
 	}
 	
 	@Override
@@ -62,13 +65,19 @@ public class Forum implements Runnable{
 		this._sforums = _sforums;
 	}
 
-	public List<Session> get_sessions() {
+	public Hashtable<UUID, Session> get_sessions() {
 		return _sessions;
 	}
 
-	public void add_session(Session s) {
-		this._sessions.add(s);
+	public Session get_session(UUID id) {
+		return _sessions.get(id);
 	}
 
+	public void add_session(UUID id, Session s) {
+		this._sessions.put(id, s);
+	}
 
+	public User get_user(String username){
+	    return null;
+	}
 }

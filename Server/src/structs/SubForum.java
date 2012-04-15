@@ -1,12 +1,14 @@
 package structs;
 
-import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.List;
 
 public class SubForum {
-	protected List<User> _moderators;
+    	protected String _title;
+	protected Hashtable<User, Integer> _moderators; // Integer - num of ban requests
+	protected List<Post> _posts;
 	
 	public SubForum(){
-		this._moderators = new ArrayList<User>();
+		this._moderators = new Hashtable<User, Integer>();
 	}
 }

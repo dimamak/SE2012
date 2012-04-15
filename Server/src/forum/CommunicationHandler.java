@@ -3,7 +3,7 @@ package forum;
 import http.HttpException;
 import http.HttpMessage;
 import http.HttpRequest;
-import http.HttpResponce;
+import http.HttpResponse;
 import http.RequestLine;
 
 import java.io.IOException;
@@ -19,12 +19,12 @@ public class CommunicationHandler {
 	protected static final String _seperator = "\r\n";
 
 	/**
-	 * Send {@link HttpResponce}
+	 * Send {@link HttpResponse}
 	 * 
 	 * @param p
 	 * @throws IOException
 	 */
-	public static void send(OutputStream os, String charsetName, HttpResponce p)
+	public static void send(OutputStream os, String charsetName, HttpResponse p)
 			throws IOException {
 		OutputStreamWriter osw = new OutputStreamWriter(os, charsetName);
 
