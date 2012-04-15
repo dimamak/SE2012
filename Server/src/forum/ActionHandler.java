@@ -1,27 +1,23 @@
 package forum;
 
-import java.util.Hashtable;
+import java.lang.reflect.Method;
 
 import http.HttpException;
 import http.HttpRequest;
 import http.HttpResponce;
 
 public class ActionHandler {
-	protected Hashtable<String, String> _arguments;
-	protected Forum _forum;
 
-
-	public HttpResponce processAction(Forum forum, HttpRequest inPkt) throws HttpException {
+	public static HttpResponce processAction(Forum forum, HttpRequest inPkt) throws HttpException {
 		HttpResponce ans = new HttpResponce();
-		this._forum = forum;
-		this._arguments = inPkt.get_arguments();
-		String action = this._arguments.get("action");
 
-		// If there are cookies, then site visited earlier, then there might be
-		// session
-		if (inPkt.get_cookies().containsKey("SESSID") && inPkt.get_headers().containsKey("action")) {
+		// If there are cookies, then site visited earlier, 
+		// then there might be session
+		if (inPkt.get_cookies().containsKey("SESSID") && inPkt.get_arguments().containsKey("action")) {
 			try {
-				getClass().getMethod(action).invoke(this);
+				String action = inPkt.get_arguments().get("action");
+				Method mtd = ActionHandler.class.getMethod(action, Forum.class, HttpRequest.class);
+				ans = (HttpResponce) mtd.invoke(null, forum, inPkt);
 			} catch (NoSuchMethodException e) {
 				throw new HttpException(405,"Method Not Allowed.");
 			} catch (Exception e) {
@@ -31,24 +27,24 @@ public class ActionHandler {
 					throw new HttpException(500,"Internal Server Error", e.getMessage());
 			}
 		} else {
-			ans = entry();
+			ans = entry(forum, inPkt);
 		}
 
 		return ans;
 
 	}
 
-	public HttpResponce login() {
+	public static HttpResponce login(Forum forum, HttpRequest inPkt) {
 		HttpResponce ans = new HttpResponce();
 		System.out.println("login");
 		return ans;
 	}
 
-	public HttpResponce entry() {
+	public static HttpResponce entry(Forum forum, HttpRequest inPkt) {
 		HttpResponce ans = new HttpResponce();
 		// Create new session
 		Session s = new Session();
-		this._forum.add_session(s);
+		forum.add_session(s);
 
 		// Create response
 		ans.get_statusLine().set_statusCode(200);
@@ -57,51 +53,51 @@ public class ActionHandler {
 		return ans;
 	}
 	
-	public HttpResponce register(){
+	public static HttpResponce register(Forum forum, HttpRequest inPkt){
 		return null;
 	}
 	
-	public HttpResponce logout(){
+	public static HttpResponce logout(Forum forum, HttpRequest inPkt){
 		return null;
 	}
 	
-	public HttpResponce viewforum(){
+	public static HttpResponce viewforum(Forum forum, HttpRequest inPkt){
 		return null;
 	}
 	
-	public HttpResponce viewmessage(){
+	public static HttpResponce viewmessage(Forum forum, HttpRequest inPkt){
 		return null;
 	}
 	
-	public HttpResponce home(){
+	public static HttpResponce home(Forum forum, HttpRequest inPkt){
 		return null;
 	}
 	
-	public HttpResponce publish(){
+	public static HttpResponce publish(Forum forum, HttpRequest inPkt){
 		return null;
 	}
 	
-	public HttpResponce search(){
+	public static HttpResponce search(Forum forum, HttpRequest inPkt){
 		return null;
 	}
 	
-	public HttpResponce addfriend(){
+	public static HttpResponce addfriend(Forum forum, HttpRequest inPkt){
 		return null;
 	}
 	
-	public HttpResponce ban(){
+	public static HttpResponce ban(Forum forum, HttpRequest inPkt){
 		return null;
 	}
 	
-	public HttpResponce setmoderator(){
+	public static HttpResponce setmoderator(Forum forum, HttpRequest inPkt){
 		return null;
 	}
 	
-	public HttpResponce suspendmoder(){
+	public static HttpResponce suspendmoder(Forum forum, HttpRequest inPkt){
 		return null;
 	}
 	
-	public HttpResponce setadmin(){
+	public static HttpResponce setadmin(Forum forum, HttpRequest inPkt){
 		return null;
 	}
 }

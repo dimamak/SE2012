@@ -29,19 +29,18 @@ public class ClientRunnable implements Runnable {
 	public void run() {
 		try {
 			HttpRequest inPkt = null;
-			HttpResponce outPkt = new HttpResponce();
-			ActionHandler acHandler = new ActionHandler();
+			HttpResponce outPkt = null;
 			try {
 				// Try to parse incoming request
 				inPkt = CommunicationHandler.receive(this._socket.getInputStream(), "UTF-8");
 				while(inPkt == null)
 					inPkt = CommunicationHandler.receive(this._socket.getInputStream(), "UTF-8");
 
-				outPkt = acHandler.processAction(this._server, inPkt);
+				outPkt = ActionHandler.processAction(this._server, inPkt);
 
 			} catch (HttpException e) {
-				// Create responce packet
-
+				// Create error responce packet
+				outPkt = new HttpResponce();
 
 			}
 

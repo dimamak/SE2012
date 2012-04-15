@@ -11,6 +11,8 @@ import java.util.Map.Entry;
  */
 public class HttpRequest extends HttpMessage {
 	protected RequestLine _initLine;
+	private Hashtable<String, String> _cookies = null;
+	private Hashtable<String, String> _arguments = null;
 
 	public RequestLine get_initLine() {
 		return _initLine;
@@ -36,18 +38,21 @@ public class HttpRequest extends HttpMessage {
 	}
 
 	public Hashtable<String, String> get_cookies() {
-		Hashtable<String, String> ans = new Hashtable<String, String>();
-
-		String cookies = get_headers().get("cookie");
-		// If Cookie header found
-		if (cookies != null) {
-			for (String cookie : cookies.split(";")) {
-				String[] c = cookie.split("=");
-				ans.put(c[0], c[1]);
+		// Init _cookies field
+		if(this._cookies == null){
+			this._cookies = new Hashtable<String, String>();
+	
+			String cookies = get_headers().get("cookie");
+			// If Cookie header found
+			if (cookies != null) {
+				for (String cookie : cookies.split(";")) {
+					String[] c = cookie.split("=");
+					this._cookies.put(c[0], c[1]);
+				}
 			}
 		}
 
-		return ans;
+		return this._cookies;
 	}
 
 	/**
@@ -56,30 +61,34 @@ public class HttpRequest extends HttpMessage {
 	 * @return {@link HttpRequest} parsed parametrs
 	 */
 	public Hashtable<String, String> get_arguments(){
-		Hashtable<String, String> arguments = new Hashtable<String, String>();
-		String uri = this.get_initLine()._uri;
-		String toparse = "";
-		String[] split_equal;
-
-		// Add body arguments
-		if (this.get_body() != null)
-			toparse = new String(this.get_body());
-
-		// Add uri arguments
-		if (uri.length() > 2 && uri.indexOf('?') > 0)
-			toparse = uri.substring(uri.indexOf('?') + 1) + "&" + toparse;
-
-		if (toparse.length() > 0) {
-			for (String couple : toparse.split("&")) {
-				split_equal = couple.split("=");
-
-				/* if empty param */
-				if (split_equal.length == 1)
-					arguments.put(split_equal[0], "");
-				else
-					arguments.put(split_equal[0], split_equal[1]);
+		// Init _arguments field
+		if(this._arguments == null){
+			this._arguments = new Hashtable<String, String>();
+			String uri = this.get_initLine()._uri;
+			String toparse = "";
+			String[] split_equal;
+	
+			// Add body arguments
+			if (this.get_body() != null)
+				toparse = new String(this.get_body());
+	
+			// Add uri arguments
+			if (uri.length() > 2 && uri.indexOf('?') > 0)
+				toparse = uri.substring(uri.indexOf('?') + 1) + "&" + toparse;
+	
+			if (toparse.length() > 0) {
+				for (String couple : toparse.split("&")) {
+					split_equal = couple.split("=");
+	
+					/* if empty param */
+					if (split_equal.length == 1)
+						this._arguments.put(split_equal[0], "");
+					else
+						this._arguments.put(split_equal[0], split_equal[1]);
+				}
 			}
 		}
-		return arguments;
+		
+		return this._arguments;
 	}
 }
