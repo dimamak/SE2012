@@ -1,5 +1,6 @@
 package forum;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import structs.SubForum;
@@ -22,11 +23,13 @@ public class ActionHandler {
 				ans = (HttpResponse) mtd.invoke(null, forum, inPkt);
 			} catch (NoSuchMethodException e) {
 				throw new HttpException(501,"Method Not Implemented.");
-			} catch (Exception e) {
-				if(e instanceof HttpException)
-					throw (HttpException)e;
+			} catch (InvocationTargetException e){
+				if(e.getCause() instanceof HttpException)
+					throw (HttpException)e.getCause();
 				else
 					throw new HttpException(500,"Internal Server Error", e.getMessage());
+			} catch (Exception e) {
+				throw new HttpException(500,"Internal Server Error", e.getMessage());
 			}
 		} else {
 			ans = entry(forum, inPkt);
@@ -71,8 +74,38 @@ public class ActionHandler {
 		return null;
 	}
 	
-	public static HttpResponse addsubforum(Forum forum, HttpRequest inPkt){
-		return null;
+	public static HttpResponse addsubforum(Forum forum, HttpRequest inPkt) throws HttpException{
+		String title = inPkt.get_arguments().get("title");
+		if(title == null)
+			throw new HttpException(400,"No title specified.");
+		
+		// Ensure there is no subforum with same title
+		for(SubForum sf : forum.get_sforums()){
+			if(sf.get_title().contentEquals(title))
+				throw new HttpException(400,"Subforum with given title exists.");
+		}
+		
+		SubForum s = new SubForum(title);
+		forum.get_sforums().add(s);
+		
+		
+		
+		
+		HttpResponse ans = new HttpResponse();
+		
+		String ttl = "Main page";
+		
+		String body = "<ul>";
+		for(SubForum sf : forum.get_sforums()){
+			body += "<li>" + sf.get_title() + "</li>";
+		}
+		body += "</ul>";
+		
+		ans.get_statusLine().set_statusCode(200);
+		ans.get_statusLine().set_description("OK");
+		ans.set_htmlbody(ttl, body);
+		
+		return ans;
 	}
 	
 	/**

@@ -42,6 +42,25 @@ public class ClientRunnable implements Runnable {
 				// Create error responce packet
 				outPkt = new HttpResponse();
 
+				outPkt.get_statusLine().set_statusCode(e.get_errNumber());
+
+				String descr = "";
+				if(e.get_errInfo() != ""){
+					descr += e.get_errInfo();
+					if(e.get_errSourceString() != "")
+						descr += " - " + e.get_errSourceString();
+				}
+				outPkt.get_statusLine().set_description(descr);
+
+				String title = "Error " + e.get_errNumber();
+				String body = "Error number: " + e.get_errNumber() + "<br>";
+				if(e.get_errInfo() != ""){
+					body += "Description: " + e.get_errInfo() + "<br>";
+					if(e.get_errSourceString() != "")
+						body += e.get_errSourceString();
+				}
+				outPkt.set_htmlbody(title, body);
+
 			}
 
 			// Send packet
