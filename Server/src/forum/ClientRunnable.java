@@ -1,14 +1,11 @@
 package forum;
 
 
-import http.HttpMessageParser;
-import http.HttpMessageSender;
 import http.HttpRequest;
 import http.HttpException;
 import http.HttpResponce;
 import java.io.IOException;
 import java.net.Socket;
-import java.util.Hashtable;
 
 /**
  * This class implements {@link Server} life cycle against Client
@@ -36,11 +33,9 @@ public class ClientRunnable implements Runnable {
 			ActionHandler acHandler = new ActionHandler();
 			try {
 				// Try to parse incoming request
-				inPkt = HttpMessageParser.parseRequest(this._socket.getInputStream(), "UTF-8");
+				inPkt = CommunicationHandler.receive(this._socket.getInputStream(), "UTF-8");
 				while(inPkt == null)
-					inPkt = HttpMessageParser.parseRequest(this._socket.getInputStream(), "UTF-8");
-				
-				//throw new HttpException(400,"No Host header found in incoming message.");
+					inPkt = CommunicationHandler.receive(this._socket.getInputStream(), "UTF-8");
 
 				outPkt = acHandler.processAction(this._server, inPkt);
 
@@ -51,7 +46,7 @@ public class ClientRunnable implements Runnable {
 			}
 
 			// Send packet
-			HttpMessageSender.send(this._socket.getOutputStream(), "UTF-8", outPkt);
+			CommunicationHandler.send(this._socket.getOutputStream(), "UTF-8", outPkt);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
