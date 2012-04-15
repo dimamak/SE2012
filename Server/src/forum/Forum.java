@@ -78,6 +78,10 @@ public class Forum implements Runnable{
 	}
 
 	public User get_user(String username){
-	    return null;
+	    User ans=null;
+	    for(User single : this._users)
+		if(single.get_username().compareTo(username)==0)
+		    ans=single;
+	    return ans;
 	}
 }
