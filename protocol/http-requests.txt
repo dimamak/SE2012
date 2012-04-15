@@ -3,32 +3,42 @@ entry
 	
 registration
 	action = register
-	username,password,fname,sname,email
+	username,
+	password,
+	fname,
+	sname,
+	email
 
 login
 	action = login
-	username,password
+	username,
+	password
 
 logout
 	action = logout
 	
-view forum
+view list of subforums
 	action = viewforum
-	forumid
-
-view message
-	action = viewmessage
-	messageid
-
-view forum list
-	action = home
 	
-publish
+view list of discussions within subforum
+	action = viewsubforum
+	subforumid
+
+view discussion (message with recoursive comments)
+	action = viewdiscussion
+	discussionid
+
+add subforum
+	action = addsubforum
+	title
+	
+add / edit / remove message 
 	action = publish
-	forumid, threadid(if 0 then new thread), 
-	messageid(if not 0 edit existing message),
-	title, content
-	
+	subforumid (if new discussion) / 
+	parentmsgid(if new comment to old discussion) / 
+	messageid(if editing message),
+	title, (if title&content empty -> remove message with all comments recoursevly)
+	content
 
 search
 	action = search

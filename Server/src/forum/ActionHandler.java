@@ -2,6 +2,8 @@ package forum;
 
 import java.lang.reflect.Method;
 
+import structs.SubForum;
+
 import http.HttpException;
 import http.HttpRequest;
 import http.HttpResponse;
@@ -61,16 +63,40 @@ public class ActionHandler {
 		return null;
 	}
 	
+	public static HttpResponse viewdiscussion(Forum forum, HttpRequest inPkt){
+		return null;
+	}
+	
+	public static HttpResponse viewsubforum(Forum forum, HttpRequest inPkt){
+		return null;
+	}
+	
+	public static HttpResponse addsubforum(Forum forum, HttpRequest inPkt){
+		return null;
+	}
+	
+	/**
+	 * 
+	 * @param forum
+	 * @param inPkt
+	 * @return List of subforums
+	 */
 	public static HttpResponse viewforum(Forum forum, HttpRequest inPkt){
-		return null;
-	}
-	
-	public static HttpResponse viewmessage(Forum forum, HttpRequest inPkt){
-		return null;
-	}
-	
-	public static HttpResponse home(Forum forum, HttpRequest inPkt){
-		return null;
+		HttpResponse ans = new HttpResponse();
+		
+		String title = "Main page";
+		
+		String body = "<ul>";
+		for(SubForum sf : forum.get_sforums()){
+			body += "<li>" + sf.get_title() + "</li>";
+		}
+		body += "</ul>";
+		
+		ans.get_statusLine().set_statusCode(200);
+		ans.get_statusLine().set_description("OK");
+		ans.set_htmlbody(title, body);
+		
+		return ans;
 	}
 	
 	public static HttpResponse publish(Forum forum, HttpRequest inPkt){
