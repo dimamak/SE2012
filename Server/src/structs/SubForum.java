@@ -1,17 +1,13 @@
 package structs;
 
-import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.List;
 
-public class SubForum {
+public class SubForum extends ForumObject{
 	protected String _title;
 	protected Hashtable<User, Integer> _moderators; // Integer - num of ban requests
-	protected List<Message> _posts;
 
 	public SubForum(String title) {
 		this._moderators = new Hashtable<User, Integer>();
-		this._posts = new ArrayList<Message>();
 		this._title = title;
 	}
 
@@ -31,11 +27,4 @@ public class SubForum {
 		this._moderators = _moderators;
 	}
 
-	public List<Message> get_posts() {
-		return _posts;
-	}
-
-	public void set_posts(List<Message> _posts) {
-		this._posts = _posts;
-	}
 }

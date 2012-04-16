@@ -82,7 +82,7 @@ public class HttpRequest extends HttpMessage {
 	
 					/* if empty param */
 					if (split_equal.length == 1)
-						this._arguments.put(split_equal[0], "");
+						this._arguments.put(split_equal[0], null);
 					else
 						this._arguments.put(split_equal[0], split_equal[1]);
 				}

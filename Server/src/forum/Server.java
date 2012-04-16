@@ -13,7 +13,7 @@ public class Server {
 	 */
 	public static void main(String[] args) {
 		// Set default port
-		int port = 1234;
+		int port = 9091;
 		
 		// Consider arguments
 		if (args.length == 1) {
@@ -25,9 +25,9 @@ public class Server {
 		}
 		
 		
-		Forum f = null;
+		ForumRunnable f = null;
 		try {
-			f = new Forum(port);
+			f = new ForumRunnable(port);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

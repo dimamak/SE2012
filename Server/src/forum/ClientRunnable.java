@@ -13,14 +13,14 @@ import java.net.Socket;
  */
 public class ClientRunnable implements Runnable {
 	protected Socket _socket;
-	protected Forum _server;
+	protected ForumRunnable _server;
 
 	/**
 	 * Class constructor.
 	 * @param sock {@link Socket} instance
 	 * @param server {@link Server} instance
 	 */
-	public ClientRunnable(Socket sock, Forum server) {
+	public ClientRunnable(Socket sock, ForumRunnable server) {
 		this._socket = sock;
 		this._server = server;
 	}

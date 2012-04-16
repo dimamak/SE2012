@@ -13,6 +13,7 @@ public class HttpResponse extends HttpMessage{
 	
 	public HttpResponse(){
 		this._statusLine = new StatusLine();
+		this._headers.put("Content-Type", "text/html");
 	}
 
 	public StatusLine get_statusLine() {

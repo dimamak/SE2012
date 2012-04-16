@@ -28,15 +28,10 @@ view discussion (message with recoursive comments)
 	action = viewdiscussion
 	discussionid
 
-add subforum
-	action = addsubforum
-	title
-	
 add / edit / remove message 
 	action = publish
-	subforumid (if new discussion) / 
-	parentmsgid(if new comment to old discussion) / 
-	messageid(if editing message),
+	parentmsgid(if new subforum/message) / 
+	messageid(if editing/deleting subforum/message),
 	title, (if title&content empty -> remove message with all comments recoursevly)
 	content
 

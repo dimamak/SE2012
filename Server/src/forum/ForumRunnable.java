@@ -8,7 +8,8 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.UUID;
 
-import structs.SubForum;
+import structs.Forum;
+import structs.ForumObject;
 import structs.User;
 
 /**
@@ -16,21 +17,25 @@ import structs.User;
  * @author Andrey
  * @version 1.1
  */
-public class Forum implements Runnable{
+public class ForumRunnable implements Runnable{
 	protected ServerSocket _sockFactory;
-	protected User _admin;
-	protected List<SubForum> _sforums;
+	
 	protected Hashtable<UUID,Session> _sessions;
+	protected Hashtable<Integer,ForumObject> _fobjects;
 	protected List<User> _users;
 	
-	public Forum(int port) throws IOException{
+	public ForumRunnable(int port) throws IOException{
 		System.out.println("Creating forum listener on port " + port);
 		this._sockFactory = new ServerSocket();
 		this._sockFactory.bind(new InetSocketAddress(port));
 		
 		
-		this._sforums = new ArrayList<SubForum>();
 		this._sessions = new Hashtable<UUID, Session>();
+		this._fobjects = new Hashtable<Integer,ForumObject>();
+		this._users = new ArrayList<User>();
+		
+		Forum f = new Forum();
+		this._fobjects.put(f.get_id(), f);
 	}
 	
 	@Override
@@ -47,22 +52,6 @@ public class Forum implements Runnable{
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-	}
-
-	public User get_admin() {
-		return _admin;
-	}
-
-	public void set_admin(User _admin) {
-		this._admin = _admin;
-	}
-
-	public List<SubForum> get_sforums() {
-		return _sforums;
-	}
-
-	public void set_sforums(List<SubForum> _sforums) {
-		this._sforums = _sforums;
 	}
 
 	public Hashtable<UUID, Session> get_sessions() {
@@ -84,4 +73,40 @@ public class Forum implements Runnable{
 		    ans=single;
 	    return ans;
 	}
+
+	public Hashtable<Integer, ForumObject> get_fobjects() {
+		return _fobjects;
+	}
+
+	public Forum get_forum(){
+		return (Forum) this._fobjects.get(0);
+	}
+	
+	public void add_fobject(ForumObject obj, ForumObject parent){
+		this._fobjects.put(obj.get_id(), obj);
+		parent.get_children().add(obj);
+		obj.set_parent(parent);
+	}
+	
+	public void add_fobject(ForumObject obj, Integer parentId){
+		add_fobject(obj, this._fobjects.get(parentId));
+	}
+	
+	public void delete_fobject(ForumObject obj){
+		// Delete children
+		for(ForumObject child : obj.get_children())
+			delete_fobject(child);
+		
+		// Delete parent link
+		obj.get_parent().get_children().remove(obj);
+		
+		// Delete object itself
+		this._fobjects.remove(obj.get_id());
+	}
+	
+	public void delete_fobject(Integer objId){
+		ForumObject obj = this._fobjects.get(objId);
+		delete_fobject(obj);
+	}
+	
 }
