@@ -134,8 +134,13 @@ public class ActionHandler {
 		return ans;
 	}
 
-	public static HttpResponse logout(ForumRunnable fr, HttpRequest inPkt) {
-		return null;
+	public static HttpResponse logout(ForumRunnable forum, HttpRequest inPkt) {
+		HttpResponse ans = new HttpResponse();
+		Session curSession = forum.get_session(UUID.fromString(inPkt
+				.get_cookies().get("SESSID")));
+		curSession.set_user(null);
+		ans.set_htmlbody("Logged out", "<h1>Successfully logged out</h1>");
+		return ans;
 	}
 
 	public static HttpResponse viewdiscussion(ForumRunnable fr,
