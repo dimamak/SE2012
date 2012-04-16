@@ -22,6 +22,8 @@ public class ActionHandler {
 		// If there are cookies, then site visited earlier,
 		// then there might be session
 		if (inPkt.get_cookies().containsKey("SESSID")
+				&& fr.get_session(UUID.fromString(inPkt.get_cookies().get(
+						"SESSID"))) != null
 				&& inPkt.get_arguments().containsKey("action")) {
 			try {
 				String action = inPkt.get_arguments().get("action");
@@ -285,6 +287,7 @@ public class ActionHandler {
 	}
 
 	public static HttpResponse addfriend(ForumRunnable fr, HttpRequest inPkt) {
+
 		return null;
 	}
 
@@ -300,7 +303,30 @@ public class ActionHandler {
 		return null;
 	}
 
-	public static HttpResponse setadmin(ForumRunnable fr, HttpRequest inPkt) {
-		return null;
+	public static HttpResponse setadmin(ForumRunnable fr, HttpRequest inPkt)
+			throws HttpException {
+		HttpResponse ans = new HttpResponse();
+		User member;
+		Session curSession = fr.get_session(UUID.fromString(inPkt.get_cookies()
+				.get("SESSID")));
+		String username = inPkt.get_arguments().get("username");
+		if (fr.get_forum().get_admin() != curSession.get_user()) {
+			throw new HttpException(400,
+					"You are not allowed to change the admin");
+		} else {
+			if (username == null) {
+				throw new HttpException(400, "Parameter miss");
+			} else {
+				member = fr.get_user(username);
+				if (member == null) {
+					throw new HttpException(400, "Username not found");
+				} else {
+					fr.get_forum().set_admin(member);
+				}
+				ans.set_htmlbody("Admin changed",
+						"Now " + member.get_username() + " is admin!");
+			}
+		}
+		return ans;
 	}
 }
