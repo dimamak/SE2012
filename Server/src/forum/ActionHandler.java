@@ -2,10 +2,12 @@ package forum;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.UUID;
 
 import structs.ForumObject;
 import structs.Message;
 import structs.SubForum;
+import structs.User;
 
 import http.HttpException;
 import http.HttpRequest;
@@ -45,22 +47,43 @@ public class ActionHandler {
 		return ans;
 
 	}
-	
-	private static Integer getIntArgument(HttpRequest inPkt, String argName){
+
+	private static Integer getIntArgument(HttpRequest inPkt, String argName) {
 		Integer ans = null;
-		
-		try{
+
+		try {
 			String argNameValue = inPkt.get_arguments().get(argName);
 			ans = Integer.parseInt(argNameValue);
+		} catch (Exception e) {
 		}
-		catch(Exception e){}
-		
+
 		return ans;
 	}
 
-	public static HttpResponse login(ForumRunnable fr, HttpRequest inPkt) {
+	public static HttpResponse login(ForumRunnable forum, HttpRequest inPkt)
+			throws HttpException {
 		HttpResponse ans = new HttpResponse();
-		System.out.println("login");
+		User member;
+		Session curSession = forum.get_session(UUID.fromString(inPkt
+				.get_cookies().get("SESSID")));
+		String username = inPkt.get_arguments().get("username");
+		String password = inPkt.get_arguments().get("password");
+		password = SecurityHandler.generateMd5(password);
+		if (username == null || password == null) {
+			throw new HttpException(400, "Parameter miss");
+		} else {
+			member = forum.get_user(username);
+
+			if (member == null) {
+				throw new HttpException(401, "Username or password error");
+			} else if (password == null
+					|| member.get_password().compareTo(password) != 0) {
+				throw new HttpException(401, "Username or password error");
+			} else {
+				curSession.set_user(member);
+				ans.set_htmlbody("Logged in", "<h1>Successfully logged in</h1>");
+			}
+		}
 		return ans;
 	}
 
@@ -77,8 +100,38 @@ public class ActionHandler {
 		return ans;
 	}
 
-	public static HttpResponse register(ForumRunnable fr, HttpRequest inPkt) {
-		return null;
+	public static HttpResponse register(ForumRunnable forum, HttpRequest inPkt)
+			throws HttpException {
+		HttpResponse ans = new HttpResponse();
+		User member;
+		Session curSession = forum.get_session(UUID.fromString(inPkt
+				.get_cookies().get("SESSID")));
+		String fname = inPkt.get_arguments().get("fname");
+		String sname = inPkt.get_arguments().get("sname");
+		String email = inPkt.get_arguments().get("email");
+		String username = inPkt.get_arguments().get("username");
+		String password = inPkt.get_arguments().get("password");
+		if (username == null || password == null || email == null
+				|| sname == null || fname == null) {
+			throw new HttpException(400, "Parameter miss");
+		} else {
+			member = forum.get_user(username);
+			if (member != null) {
+				throw new HttpException(400, "Username already exist");
+			} else {
+				member = forum.get_user_byemail(email);
+				if (member != null) {
+					throw new HttpException(400, "Email already exist");
+				} else {
+					member = new User(fname, sname, username, password, email);
+					forum.add_user(member);
+					curSession.set_user(member);
+					ans.set_htmlbody("Registered",
+							"<h1>Successfully registered</h1>");
+				}
+			}
+		}
+		return ans;
 	}
 
 	public static HttpResponse logout(ForumRunnable fr, HttpRequest inPkt) {
@@ -90,24 +143,28 @@ public class ActionHandler {
 		return null;
 	}
 
-	public static HttpResponse viewsubforum(ForumRunnable fr, HttpRequest inPkt) throws HttpException {
+	public static HttpResponse viewsubforum(ForumRunnable fr, HttpRequest inPkt)
+			throws HttpException {
 		HttpResponse ans = new HttpResponse();
-		
+
 		// Ensure subforumid argument specified
 		Integer subforumid = getIntArgument(inPkt, "subforumid");
-		if(subforumid == null)
+		if (subforumid == null)
 			throw new HttpException(400, "No subforumid argument specified.");
 
-		// Ensure subforum exists and it is really subforum (not forum, not message)
+		// Ensure subforum exists and it is really subforum (not forum, not
+		// message)
 		ForumObject fo = fr.get_fobjects().get(subforumid);
-		if(fo == null || fo.get_parent() == null || fo.get_parent().get_id() != 0)
+		if (fo == null || fo.get_parent() == null
+				|| fo.get_parent().get_id() != 0)
 			throw new HttpException(400, "No subforum with given id found.");
-		
-		String title = "List of discussions in subforum " + ((SubForum)fo).get_title();
+
+		String title = "List of discussions in subforum "
+				+ ((SubForum) fo).get_title();
 
 		String body = "<ul>";
 		for (ForumObject msg : fo.get_children()) {
-			body += "<li>" + ((Message)msg).get_title() + "</li>";
+			body += "<li>" + ((Message) msg).get_title() + "</li>";
 		}
 		body += "</ul>";
 
@@ -141,79 +198,80 @@ public class ActionHandler {
 
 		return ans;
 	}
-	
-	public static HttpResponse publish(ForumRunnable fr, HttpRequest inPkt) throws HttpException {
+
+	public static HttpResponse publish(ForumRunnable fr, HttpRequest inPkt)
+			throws HttpException {
 		String title = inPkt.get_arguments().get("title");
 		String content = inPkt.get_arguments().get("content");
 		Integer parentmsgid = getIntArgument(inPkt, "parentmsgid");
 		Integer messageid = getIntArgument(inPkt, "messageid");
-		
 
 		// If creating subforum/message
-		if(parentmsgid != null){
-			ForumObject fo = fr.get_fobjects().get(parentmsgid); 
-			if(fo == null)
+		if (parentmsgid != null) {
+			ForumObject fo = fr.get_fobjects().get(parentmsgid);
+			if (fo == null)
 				throw new HttpException(400, "No parent message found.");
-			
+
 			// If creating subforum
-			if(parentmsgid == 0){
-				if(title == null)
+			if (parentmsgid == 0) {
+				if (title == null)
 					throw new HttpException(400, "No title argument specified.");
-				
+
 				SubForum s = new SubForum(title);
 				fr.add_fobject(s, fo);
 			}
 			// If creating message
-			else{
-				if(title == null && content == null)
-					throw new HttpException(400, "No title/content arguments specified.");
+			else {
+				if (title == null && content == null)
+					throw new HttpException(400,
+							"No title/content arguments specified.");
 
 				Message m = new Message();
-				
-				if(title == null)
+
+				if (title == null)
 					title = "No title";
 				m.set_title(title);
-				
-				if(content != null)
+
+				if (content != null)
 					content = "";
 				m.set_body(content);
-				
+
 				fr.add_fobject(m, fo);
 			}
 		}
 		// If editing/deleting subforum/message
-		else if(messageid != null){
+		else if (messageid != null) {
 			ForumObject fo = fr.get_fobjects().get(messageid);
-			if(fo == null || fo.get_id() == 0)
+			if (fo == null || fo.get_id() == 0)
 				throw new HttpException(400, "No message found.");
-			
+
 			// If editing/deleting subforum
-			if(fo.get_parent().get_id() == 0){
-				if(title == null)
+			if (fo.get_parent().get_id() == 0) {
+				if (title == null)
 					fr.delete_fobject(fo);
 				else
-					((SubForum)fo).set_title(title);
+					((SubForum) fo).set_title(title);
 			}
-			//If editing/deleting message
-			else{
-				if(title == null && content == null)
+			// If editing/deleting message
+			else {
+				if (title == null && content == null)
 					fr.delete_fobject(fo);
-				else{
-					if(title == null)
+				else {
+					if (title == null)
 						title = "No title";
-					((Message)fo).set_title(title);
-					
-					if(content != null)
+					((Message) fo).set_title(title);
+
+					if (content != null)
 						content = "";
-					((Message)fo).set_body(content);
+					((Message) fo).set_body(content);
 				}
-					
+
 			}
-			
-		}
-		else
-			throw new HttpException(400, "No parentmsgid/messageid argument specified.");
-		
+
+		} else
+			throw new HttpException(400,
+					"No parentmsgid/messageid argument specified.");
+
 		return viewforum(fr, inPkt);
 	}
 

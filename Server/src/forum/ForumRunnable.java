@@ -73,6 +73,18 @@ public class ForumRunnable implements Runnable{
 		    ans=single;
 	    return ans;
 	}
+	
+	public void add_user(User u){
+		this._users.add(u);
+	}
+	
+	public User get_user_byemail(String email){
+	    User ans=null;
+	    for(User single : this._users)
+		if(single.get_email().compareTo(email)==0)
+		    ans=single;
+	    return ans;
+	}
 
 	public Hashtable<Integer, ForumObject> get_fobjects() {
 		return _fobjects;
