@@ -146,8 +146,46 @@ public class ActionHandler {
 	}
 
 	public static HttpResponse viewdiscussion(ForumRunnable fr,
-			HttpRequest inPkt) {
-		return null;
+			HttpRequest inPkt) throws HttpException {
+		HttpResponse ans = new HttpResponse();
+
+		// Ensure subforumid argument specified
+		Integer discussionid = getIntArgument(inPkt, "discussionid");
+		if (discussionid == null)
+			throw new HttpException(400, "No discussionid argument specified.");
+
+		// Ensure discussion exists and it is really discussion (not forum, not
+		// message)
+		ForumObject fo = fr.get_fobjects().get(discussionid);
+		if (fo == null || fo.get_parent() == null
+				|| fo.get_parent().get_id() == 0)
+			throw new HttpException(400, "No discussion with given id found.");
+
+		String title = "Discussion "
+				+ ((Message) fo).get_title();
+
+		String body = "<ul>";
+		for (ForumObject msg : fo.get_children()) {
+			body += "<li>" + ((Message) msg).get_title() + "</li>";
+		}
+		body += "</ul>";
+
+		ans.get_statusLine().set_statusCode(200);
+		ans.get_statusLine().set_description("OK");
+		ans.set_htmlbody(title, body);
+
+		return ans;
+	}
+	
+	private static String getMessage(Message msg){
+		String ans = "";
+		
+		ans += "<table>";
+		ans += "<tr><th>" + msg.get_title() + "</th></tr>";
+		ans += "<tr><td>" + msg.get_title() + "</td></tr>";
+		ans += "</table>";
+		
+		return ans;
 	}
 
 	public static HttpResponse viewsubforum(ForumRunnable fr, HttpRequest inPkt)
