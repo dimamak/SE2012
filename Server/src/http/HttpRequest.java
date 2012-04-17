@@ -1,5 +1,7 @@
 package http;
 
+import java.net.URLDecoder;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map.Entry;
 
@@ -12,7 +14,7 @@ import java.util.Map.Entry;
 public class HttpRequest extends HttpMessage {
 	protected RequestLine _initLine;
 	private Hashtable<String, String> _cookies = null;
-	private Hashtable<String, String> _arguments = null;
+	private HashMap<String, String> _arguments = null;
 
 	public RequestLine get_initLine() {
 		return _initLine;
@@ -60,13 +62,13 @@ public class HttpRequest extends HttpMessage {
 	 * 
 	 * @return {@link HttpRequest} parsed parametrs
 	 */
-	public Hashtable<String, String> get_arguments(){
+	@SuppressWarnings("deprecation")
+	public HashMap<String, String> get_arguments(){
 		// Init _arguments field
 		if(this._arguments == null){
-			this._arguments = new Hashtable<String, String>();
+			this._arguments = new HashMap<String, String>();
 			String uri = this.get_initLine()._uri;
 			String toparse = "";
-			String[] split_equal;
 	
 			// Add body arguments
 			if (this.get_body() != null)
@@ -78,13 +80,14 @@ public class HttpRequest extends HttpMessage {
 	
 			if (toparse.length() > 0) {
 				for (String couple : toparse.split("&")) {
-					split_equal = couple.split("=");
+					String key = couple.substring(0, couple.indexOf('='));
+					String value = couple.substring(couple.indexOf('=')+1);
 	
 					/* if empty param */
-					if (split_equal.length == 1)
-						this._arguments.put(split_equal[0], null);
+					if (value.isEmpty()) 
+						this._arguments.put(key, null);
 					else
-						this._arguments.put(split_equal[0], split_equal[1]);
+						this._arguments.put(key, URLDecoder.decode(value));
 				}
 			}
 		}

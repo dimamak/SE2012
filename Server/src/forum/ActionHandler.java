@@ -164,11 +164,7 @@ public class ActionHandler {
 		String title = "Discussion "
 				+ ((Message) fo).get_title();
 
-		String body = "<ul>";
-		for (ForumObject msg : fo.get_children()) {
-			body += "<li>" + ((Message) msg).get_title() + "</li>";
-		}
-		body += "</ul>";
+		String body = getDiscussion((Message)fo);
 
 		ans.get_statusLine().set_statusCode(200);
 		ans.get_statusLine().set_description("OK");
@@ -177,13 +173,23 @@ public class ActionHandler {
 		return ans;
 	}
 	
-	private static String getMessage(Message msg){
+	private static String getDiscussion(Message msg){
 		String ans = "";
 		
-		ans += "<table>";
+		ans += "<ul>";
+		
+		ans += "<lh>";
+		ans += "<table border=1>";
 		ans += "<tr><th>" + msg.get_title() + "</th></tr>";
-		ans += "<tr><td>" + msg.get_title() + "</td></tr>";
+		ans += "<tr><td>" + msg.get_body() + "</td></tr>";
 		ans += "</table>";
+		ans += "</lh>";
+		
+		for(ForumObject m : msg.get_children()){
+			ans += getDiscussion((Message)m);
+		}
+		
+		ans += "</ul>";
 		
 		return ans;
 	}
@@ -277,7 +283,7 @@ public class ActionHandler {
 					title = "No title";
 				m.set_title(title);
 
-				if (content != null)
+				if (content == null)
 					content = "";
 				m.set_body(content);
 
@@ -306,7 +312,7 @@ public class ActionHandler {
 						title = "No title";
 					((Message) fo).set_title(title);
 
-					if (content != null)
+					if (content == null)
 						content = "";
 					((Message) fo).set_body(content);
 				}

@@ -74,6 +74,7 @@ public abstract class HttpMessage {
 		ans += "<title>";
 		ans += title;
 		ans += "</title>";
+		ans += "</head>";
 		ans += "<body>";
 		ans += body;
 		ans += "</body>";
