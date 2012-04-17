@@ -19,7 +19,7 @@ import structs.User;
  */
 public class ForumRunnable implements Runnable{
 	protected ServerSocket _sockFactory;
-	
+	 
 	protected Hashtable<UUID,Session> _sessions;
 	protected Hashtable<Integer,ForumObject> _fobjects;
 	protected List<User> _users;
