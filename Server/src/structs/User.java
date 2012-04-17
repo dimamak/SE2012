@@ -1,5 +1,7 @@
 package structs;
 
+import java.util.Hashtable;
+
 import forum.SecurityHandler;
 
 public class User {
@@ -8,10 +10,7 @@ public class User {
 	protected String _username;
 	protected String _password;
 	protected String _email;
-
-	public String get_fname() {
-		return _fname;
-	}
+	protected Hashtable<User, FriendshipStatus> _friends;
 
 	public User(String _fname, String _sname, String _username,
 			String _password, String _email) {
@@ -20,6 +19,18 @@ public class User {
 		this._username = _username;
 		this._password = SecurityHandler.generateMd5(_password);
 		this._email = _email;
+	}
+
+	public void add_friend(User friend,FriendshipStatus status){	
+		this._friends.put(friend, status);
+	}
+	
+	public FriendshipStatus get_friendStatus(User friend){
+		return this._friends.get(friend);
+	}
+	
+	public String get_fname() {
+		return _fname;
 	}
 
 	public void set_fname(String _fname) {

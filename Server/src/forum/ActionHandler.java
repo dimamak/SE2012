@@ -5,6 +5,7 @@ import java.lang.reflect.Method;
 import java.util.UUID;
 
 import structs.ForumObject;
+import structs.FriendshipStatus;
 import structs.Message;
 import structs.SubForum;
 import structs.User;
@@ -161,10 +162,9 @@ public class ActionHandler {
 				|| fo.get_parent().get_id() == 0)
 			throw new HttpException(400, "No discussion with given id found.");
 
-		String title = "Discussion "
-				+ ((Message) fo).get_title();
+		String title = "Discussion " + ((Message) fo).get_title();
 
-		String body = getDiscussion((Message)fo);
+		String body = getDiscussion((Message) fo);
 
 		ans.get_statusLine().set_statusCode(200);
 		ans.get_statusLine().set_description("OK");
@@ -172,25 +172,25 @@ public class ActionHandler {
 
 		return ans;
 	}
-	
-	private static String getDiscussion(Message msg){
+
+	private static String getDiscussion(Message msg) {
 		String ans = "";
-		
+
 		ans += "<ul>";
-		
+
 		ans += "<lh>";
 		ans += "<table border=1>";
 		ans += "<tr><th>" + msg.get_title() + "</th></tr>";
 		ans += "<tr><td>" + msg.get_body() + "</td></tr>";
 		ans += "</table>";
 		ans += "</lh>";
-		
-		for(ForumObject m : msg.get_children()){
-			ans += getDiscussion((Message)m);
+
+		for (ForumObject m : msg.get_children()) {
+			ans += getDiscussion((Message) m);
 		}
-		
+
 		ans += "</ul>";
-		
+
 		return ans;
 	}
 
@@ -330,9 +330,37 @@ public class ActionHandler {
 		return null;
 	}
 
-	public static HttpResponse addfriend(ForumRunnable fr, HttpRequest inPkt) {
-
-		return null;
+	public static HttpResponse addfriend(ForumRunnable forum, HttpRequest inPkt)
+			throws HttpException {
+		HttpResponse ans = new HttpResponse();
+		Session curSession = forum.get_session(UUID.fromString(inPkt
+				.get_cookies().get("SESSID")));
+		User friend = forum.get_user(inPkt.get_arguments().get("username"));
+		User curUser = curSession.get_user();
+		if (curUser == null)
+			throw new HttpException(401, "Please log-in to add friend.");
+		if (friend == null)
+			throw new HttpException(400, "Friend username not found.");
+		switch (curUser.get_friendStatus(friend)) {
+		case APPROVED:
+			throw new HttpException(400, "You already friends.");
+		case SENT:
+			throw new HttpException(400,
+					"You already sent request for this username.");
+		case RECEIVED:
+			curUser.add_friend(friend, FriendshipStatus.APPROVED);
+			friend.add_friend(curUser, FriendshipStatus.APPROVED);
+			ans.set_htmlbody("Friendship approved",
+					"Friendship with " + friend.get_username()
+							+ " approved(he wanted to be your friend)");
+			break;
+		default:
+			curUser.add_friend(friend, FriendshipStatus.SENT);
+			friend.add_friend(curUser, FriendshipStatus.RECEIVED);
+			ans.set_htmlbody("Friendship sent",
+					"Friendship send to " + friend.get_username());
+		}
+		return ans;
 	}
 
 	public static HttpResponse ban(ForumRunnable fr, HttpRequest inPkt) {
