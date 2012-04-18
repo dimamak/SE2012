@@ -176,13 +176,14 @@ public class ActionHandler {
 	private static String getDiscussion(Message msg) {
 		String ans = "";
 
-		ans += "<ul>";
+		ans += "<ul id='" + msg.get_id().toString() + "'>";
 
 		ans += "<lh>";
-		ans += "<table border=1>";
-		ans += "<tr><th>" + msg.get_title() + "</th></tr>";
-		ans += "<tr><td>" + msg.get_body() + "</td></tr>";
-		ans += "</table>";
+		ans += "<ul style='border:1px solid black;margin:5px;'>";
+		ans += "<lh>" + msg.get_title() + "</lh>";
+		ans += "<li>" + msg.get_body() + "</li>";
+		ans += "<li>" + msg.get_publisher() + "</li>";
+		ans += "</ul>";
 		ans += "</lh>";
 
 		for (ForumObject m : msg.get_children()) {
