@@ -1,9 +1,42 @@
 package bridge;
+import java.io.IOException;
 import java.util.LinkedList;
 
+import org.jsoup.nodes.Document;
 
-public class realBridge implements ServerBridgeInt {
+import serviceCode.JsoupWrapper;
+
+
+public class realBridge  implements ServerBridgeInt{
 	
+	String _serverUrl = "http://127.0.0.1:9091/?action=";
+	
+//	public Document getServerResponse(){
+//		return JsoupWrapper.get(_serverUrl.concat()
+//	}
+	
+	
+	public realBridge(){		
+//		request("entry","");
+	}
+	
+	public Document entry(){
+		return request("entry","");
+	}
+	
+	private Document request(String reqName, String optArgs){
+		Document d = null;
+		try {
+			
+			 d  = JsoupWrapper.get(_serverUrl+reqName+optArgs);
+			 System.out.println(Boolean.toString(d==null)+" "+reqName);
+		} catch (IOException e) {
+			
+			e.printStackTrace();
+		}
+		System.out.println(Boolean.toString(d==null)+" "+reqName);
+		return d;
+	}
 	
 	@Override
 	public boolean addFriend(String uName, String friendUname) {
@@ -31,7 +64,11 @@ public class realBridge implements ServerBridgeInt {
 
 	@Override
 	public boolean login(String uName, String password) {
-		// TODO Auto-generated method stub
+//		try {
+//			JsoupWrapper.get(this._serverUrl.concat("login&username="+uName+"&password="+password));
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
 		return false;
 	}
 
@@ -92,13 +129,20 @@ public class realBridge implements ServerBridgeInt {
 	}
 
 	@Override
-	public LinkedList<?> viewForum() {
-		// TODO Auto-generated method stub
-		return null;
+	public Object viewForum() {
+//		Document d = null;
+//		try {
+//			 d = JsoupWrapper.get(_serverUrl.concat("view-list-of-subforums"));
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}		
+//		return d;
+		return request("view-list-of-subforums","");
 	}
 
 	@Override
-	public LinkedList<?> viewSubForum(int subForumId) {
+	public Object viewSubForum(int subForumId) {
 		// TODO Auto-generated method stub
 		return null;
 	}

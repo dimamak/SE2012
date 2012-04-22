@@ -3,15 +3,18 @@ import java.util.LinkedList;
 
 
 public interface ServerBridgeInt {
+	
+	Object entry();
+	
 	boolean register(String userName,String password ,String fname,String sname,String email);
 	
 	boolean login(String uName, String password);
 	
 	boolean logout(); // addUname?
 	
-	LinkedList<?> viewForum(); // addUname?
+	Object viewForum(); // addUname?
 	
-	LinkedList<?> viewSubForum(int subForumId); // 
+	Object viewSubForum(int subForumId); // 
 	
 	Object viewDiscussion(int discussionId);
 	

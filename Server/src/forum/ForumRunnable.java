@@ -46,6 +46,7 @@ public class ForumRunnable implements Runnable{
 		    	ClientRunnable clnt = new ClientRunnable(this._sockFactory.accept(), this);
 		    	Thread t = new Thread(clnt);
 		    	t.start();
+		    
 		    }
 		} catch (SocketException e) {
 		    System.out.print("SocketFactory closed.");

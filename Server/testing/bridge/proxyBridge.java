@@ -4,6 +4,10 @@ import java.util.LinkedList;
 
 public class proxyBridge implements ServerBridgeInt {
 	
+	public Object entry(){
+		return null;
+	}
+	
 	ServerBridgeInt _realBridge = new realBridge();
 	@Override
 	public boolean addFriend(String uName, String friendUname) {
@@ -92,13 +96,13 @@ public class proxyBridge implements ServerBridgeInt {
 	}
 
 	@Override
-	public LinkedList<?> viewForum() {
+	public Object viewForum() {
 		 
 		return null;
 	}
 
 	@Override
-	public LinkedList<?> viewSubForum(int subForumId) {
+	public Object viewSubForum(int subForumId) {
 		 
 		return null;
 	}
