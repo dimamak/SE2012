@@ -7,7 +7,7 @@ import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.net.URLEncoder;
+
 
 public class ServerFiller {
 
@@ -19,8 +19,7 @@ public class ServerFiller {
 	public static void main(String[] args) throws IOException, URISyntaxException {
 		// Ensure number of arguments
 		if (args.length != 1) {
-			System.out
-					.println("Usage: java -Xmx1024m -jar ServerFiller.jar <list of requests filename>");
+			System.out.println("Usage: java -Xmx1024m -jar ServerFiller.jar <list of requests filename>");
 			return;
 		}
 
