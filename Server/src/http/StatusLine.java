@@ -7,7 +7,6 @@ public class StatusLine {
 	
 	public StatusLine(){
 		this._version = new HttpVersion();
-		this._statusCode=200;
 	}
 
 	public HttpVersion get_version() {

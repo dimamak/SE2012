@@ -16,20 +16,17 @@ import http.HttpResponse;
 
 public class ActionHandler {
 
-	public static HttpResponse processAction(ForumRunnable fr, HttpRequest inPkt)
-			throws HttpException {
+	public static HttpResponse processAction(ForumRunnable fr, HttpRequest inPkt) throws HttpException {
 		HttpResponse ans = new HttpResponse();
 
 		// If there are cookies, then site visited earlier,
 		// then there might be session
 		if (inPkt.get_cookies().containsKey("SESSID")
-				&& fr.get_session(UUID.fromString(inPkt.get_cookies().get(
-						"SESSID"))) != null
+				&& fr.get_session(UUID.fromString(inPkt.get_cookies().get("SESSID"))) != null
 				&& inPkt.get_arguments().containsKey("action")) {
 			try {
 				String action = inPkt.get_arguments().get("action");
-				Method mtd = ActionHandler.class.getMethod(action,
-						ForumRunnable.class, HttpRequest.class);
+				Method mtd = ActionHandler.class.getMethod(action, ForumRunnable.class, HttpRequest.class);
 				ans = (HttpResponse) mtd.invoke(null, fr, inPkt);
 			} catch (NoSuchMethodException e) {
 				throw new HttpException(501, "Method Not Implemented.");
@@ -37,11 +34,9 @@ public class ActionHandler {
 				if (e.getCause() instanceof HttpException)
 					throw (HttpException) e.getCause();
 				else
-					throw new HttpException(500, "Internal Server Error",
-							e.getMessage());
+					throw new HttpException(500, "Internal Server Error", e.getMessage());
 			} catch (Exception e) {
-				throw new HttpException(500, "Internal Server Error",
-						e.getMessage());
+				throw new HttpException(500, "Internal Server Error", e.getMessage());
 			}
 		} else {
 			ans = entry(fr, inPkt);
@@ -63,30 +58,24 @@ public class ActionHandler {
 		return ans;
 	}
 
-	public static HttpResponse login(ForumRunnable forum, HttpRequest inPkt)
-			throws HttpException {
+	public static HttpResponse login(ForumRunnable forum, HttpRequest inPkt) throws HttpException {
 		HttpResponse ans = new HttpResponse();
 		User member;
-		Session curSession = forum.get_session(UUID.fromString(inPkt
-				.get_cookies().get("SESSID")));
+		Session curSession = forum.get_session(UUID.fromString(inPkt.get_cookies().get("SESSID")));
 		String username = inPkt.get_arguments().get("username");
 		String password = inPkt.get_arguments().get("password");
 		password = SecurityHandler.generateMd5(password);
-		if (username == null || password == null) {
+		if (username == null || password == null)
 			throw new HttpException(400, "Parameter miss");
-		} else {
-			member = forum.get_user(username);
+		
+		member = forum.get_user(username);
 
-			if (member == null) {
-				throw new HttpException(401, "Username or password error");
-			} else if (password == null
-					|| member.get_password().compareTo(password) != 0) {
-				throw new HttpException(401, "Username or password error");
-			} else {
-				curSession.set_user(member);
-				ans.set_htmlbody("Logged in", "<h1>Successfully logged in</h1>");
-			}
-		}
+		if (member == null || password == null || member.get_password().compareTo(password) != 0)
+			throw new HttpException(401, "Username or password error");
+		
+		curSession.set_user(member);
+		ans.set_htmlbody("Logged in", "<h1>Successfully logged in</h1>");
+		
 		return ans;
 	}
 
@@ -103,51 +92,43 @@ public class ActionHandler {
 		return ans;
 	}
 
-	public static HttpResponse register(ForumRunnable forum, HttpRequest inPkt)
-			throws HttpException {
+	public static HttpResponse register(ForumRunnable forum, HttpRequest inPkt) throws HttpException {
 		HttpResponse ans = new HttpResponse();
 		User member;
-		Session curSession = forum.get_session(UUID.fromString(inPkt
-				.get_cookies().get("SESSID")));
+		Session curSession = forum.get_session(UUID.fromString(inPkt.get_cookies().get("SESSID")));
 		String fname = inPkt.get_arguments().get("fname");
 		String sname = inPkt.get_arguments().get("sname");
 		String email = inPkt.get_arguments().get("email");
 		String username = inPkt.get_arguments().get("username");
 		String password = inPkt.get_arguments().get("password");
-		if (username == null || password == null || email == null
-				|| sname == null || fname == null) {
+		
+		if (username == null || password == null || email == null || sname == null || fname == null)
 			throw new HttpException(400, "Parameter miss");
-		} else {
-			member = forum.get_user(username);
-			if (member != null) {
-				throw new HttpException(400, "Username already exist");
-			} else {
-				member = forum.get_user_byemail(email);
-				if (member != null) {
-					throw new HttpException(400, "Email already exist");
-				} else {
-					member = new User(fname, sname, username, password, email);
-					forum.add_user(member);
-					curSession.set_user(member);
-					ans.set_htmlbody("Registered",
-							"<h1>Successfully registered</h1>");
-				}
-			}
-		}
+		
+		if (forum.get_user(username) != null)
+			throw new HttpException(400, "Username already exist");
+
+		if (forum.get_user_byemail(email) != null)
+			throw new HttpException(400, "Email already exist");
+			
+		member = new User(fname, sname, username, password, email);
+		forum.add_user(member);
+		curSession.set_user(member);
+		ans.set_htmlbody("Registered", "<h1>Successfully registered</h1>");
+			
+		
 		return ans;
 	}
 
 	public static HttpResponse logout(ForumRunnable forum, HttpRequest inPkt) {
 		HttpResponse ans = new HttpResponse();
-		Session curSession = forum.get_session(UUID.fromString(inPkt
-				.get_cookies().get("SESSID")));
+		Session curSession = forum.get_session(UUID.fromString(inPkt.get_cookies().get("SESSID")));
 		curSession.set_user(null);
 		ans.set_htmlbody("Logged out", "<h1>Successfully logged out</h1>");
 		return ans;
 	}
 
-	public static HttpResponse viewdiscussion(ForumRunnable fr,
-			HttpRequest inPkt) throws HttpException {
+	public static HttpResponse viewdiscussion(ForumRunnable fr, HttpRequest inPkt) throws HttpException {
 		HttpResponse ans = new HttpResponse();
 
 		// Ensure subforumid argument specified
@@ -158,8 +139,7 @@ public class ActionHandler {
 		// Ensure discussion exists and it is really discussion (not forum, not
 		// message)
 		ForumObject fo = fr.get_fobjects().get(discussionid);
-		if (fo == null || fo.get_parent() == null
-				|| fo.get_parent().get_id() == 0)
+		if (fo == null || fo.get_parent() == null || fo.get_parent().get_id() == 0)
 			throw new HttpException(400, "No discussion with given id found.");
 
 		String title = "Discussion " + ((Message) fo).get_title();
@@ -195,8 +175,7 @@ public class ActionHandler {
 		return ans;
 	}
 
-	public static HttpResponse viewsubforum(ForumRunnable fr, HttpRequest inPkt)
-			throws HttpException {
+	public static HttpResponse viewsubforum(ForumRunnable fr, HttpRequest inPkt) throws HttpException {
 		HttpResponse ans = new HttpResponse();
 
 		// Ensure subforumid argument specified
@@ -207,16 +186,14 @@ public class ActionHandler {
 		// Ensure subforum exists and it is really subforum (not forum, not
 		// message)
 		ForumObject fo = fr.get_fobjects().get(subforumid);
-		if (fo == null || fo.get_parent() == null
-				|| fo.get_parent().get_id() != 0)
+		if (fo == null || fo.get_parent() == null || fo.get_parent().get_id() != 0)
 			throw new HttpException(400, "No subforum with given id found.");
 
-		String title = "List of discussions in subforum "
-				+ ((SubForum) fo).get_title();
+		String title = "List of discussions in subforum " + ((SubForum) fo).get_title();
 
 		String body = "<ul>";
 		for (ForumObject msg : fo.get_children()) {
-			body += "<li>" + ((Message) msg).get_title() + "</li>";
+			body += "<li id = '" + ((Message) msg).get_id() + "'>" + ((Message) msg).get_title() + "</li>";
 		}
 		body += "</ul>";
 
@@ -240,7 +217,7 @@ public class ActionHandler {
 
 		String body = "<ul>";
 		for (SubForum sf : fr.get_forum().get_subforums()) {
-			body += "<li>" + sf.get_title() + "</li>";
+			body += "<li id = '" + sf.get_id() + "'>" + sf.get_title() + "</li>";
 		}
 		body += "</ul>";
 
@@ -251,8 +228,7 @@ public class ActionHandler {
 		return ans;
 	}
 
-	public static HttpResponse publish(ForumRunnable fr, HttpRequest inPkt)
-			throws HttpException {
+	public static HttpResponse publish(ForumRunnable fr, HttpRequest inPkt) throws HttpException {
 		String title = inPkt.get_arguments().get("title");
 		String content = inPkt.get_arguments().get("content");
 		Integer parentmsgid = getIntArgument(inPkt, "parentmsgid");
@@ -275,8 +251,7 @@ public class ActionHandler {
 			// If creating message
 			else {
 				if (title == null && content == null)
-					throw new HttpException(400,
-							"No title/content arguments specified.");
+					throw new HttpException(400, "No title/content arguments specified.");
 
 				Message m = new Message();
 
@@ -321,8 +296,7 @@ public class ActionHandler {
 			}
 
 		} else
-			throw new HttpException(400,
-					"No parentmsgid/messageid argument specified.");
+			throw new HttpException(400, "No parentmsgid/messageid argument specified.");
 
 		return viewforum(fr, inPkt);
 	}
@@ -331,11 +305,9 @@ public class ActionHandler {
 		return null;
 	}
 
-	public static HttpResponse addfriend(ForumRunnable forum, HttpRequest inPkt)
-			throws HttpException {
+	public static HttpResponse addfriend(ForumRunnable forum, HttpRequest inPkt) throws HttpException {
 		HttpResponse ans = new HttpResponse();
-		Session curSession = forum.get_session(UUID.fromString(inPkt
-				.get_cookies().get("SESSID")));
+		Session curSession = forum.get_session(UUID.fromString(inPkt.get_cookies().get("SESSID")));
 		User friend = forum.get_user(inPkt.get_arguments().get("username"));
 		User curUser = curSession.get_user();
 		if (curUser == null)
@@ -346,20 +318,17 @@ public class ActionHandler {
 		case APPROVED:
 			throw new HttpException(400, "You already friends.");
 		case SENT:
-			throw new HttpException(400,
-					"You already sent request for this username.");
+			throw new HttpException(400, "You already sent request for this username.");
 		case RECEIVED:
 			curUser.add_friend(friend, FriendshipStatus.APPROVED);
 			friend.add_friend(curUser, FriendshipStatus.APPROVED);
-			ans.set_htmlbody("Friendship approved",
-					"Friendship with " + friend.get_username()
-							+ " approved(he wanted to be your friend)");
+			ans.set_htmlbody("Friendship approved", "Friendship with " + friend.get_username()
+					+ " approved(he wanted to be your friend)");
 			break;
 		default:
 			curUser.add_friend(friend, FriendshipStatus.SENT);
 			friend.add_friend(curUser, FriendshipStatus.RECEIVED);
-			ans.set_htmlbody("Friendship sent",
-					"Friendship send to " + friend.get_username());
+			ans.set_htmlbody("Friendship sent", "Friendship send to " + friend.get_username());
 		}
 		return ans;
 	}
@@ -368,52 +337,21 @@ public class ActionHandler {
 		return null;
 	}
 
-	public static HttpResponse setmoderator(ForumRunnable forum,
-			HttpRequest inPkt) throws HttpException {
-		HttpResponse ans = new HttpResponse();
-		SubForum subf;
-		Session curSession = forum.get_session(UUID.fromString(inPkt
-				.get_cookies().get("SESSID")));
-		User moder = forum.get_user(inPkt.get_arguments().get("username"));
-		String suspend = inPkt.get_arguments().get("suspend");
-		Integer till = getIntArgument(inPkt,"till");
-		ForumObject forumobj = forum.get_fobjects().get(
-				getIntArgument(inPkt, "forumid"));
- 
-		if (curSession.get_user() != forum.get_forum().get_admin())
-			throw new HttpException(401, "You are not allowed to add\remove moderator");
-		if (forumobj == null)
-			throw new HttpException(400, "Can find this subforum");
-		if (moder == null)
-			throw new HttpException(400, "Can find this user");
-		try {
-			subf = (SubForum) forumobj;
-		} catch (Exception e) {
-			throw new HttpException(400, "Given id is not subforum");
-		}
-		if(suspend.compareTo("1")==0){
-			subf.suspend_moderator(moder,till);
-			ans.set_htmlbody("Moderator suspended successfull",
-			"Moderator suspended successfull");
-		}
-		else{
-			subf.add_moderator(moder);
-			ans.set_htmlbody("Moderator added successfull",
-			"Moderator added successfull");
-		}
-		return ans;
+	public static HttpResponse setmoderator(ForumRunnable fr, HttpRequest inPkt) {
+		return null;
 	}
 
-	public static HttpResponse setadmin(ForumRunnable fr, HttpRequest inPkt)
-			throws HttpException {
+	public static HttpResponse suspendmoder(ForumRunnable fr, HttpRequest inPkt) {
+		return null;
+	}
+
+	public static HttpResponse setadmin(ForumRunnable fr, HttpRequest inPkt) throws HttpException {
 		HttpResponse ans = new HttpResponse();
 		User member;
-		Session curSession = fr.get_session(UUID.fromString(inPkt.get_cookies()
-				.get("SESSID")));
+		Session curSession = fr.get_session(UUID.fromString(inPkt.get_cookies().get("SESSID")));
 		String username = inPkt.get_arguments().get("username");
 		if (fr.get_forum().get_admin() != curSession.get_user()) {
-			throw new HttpException(400,
-					"You are not allowed to change the admin");
+			throw new HttpException(400, "You are not allowed to change the admin");
 		} else {
 			if (username == null) {
 				throw new HttpException(400, "Parameter miss");
@@ -424,8 +362,7 @@ public class ActionHandler {
 				} else {
 					fr.get_forum().set_admin(member);
 				}
-				ans.set_htmlbody("Admin changed",
-						"Now " + member.get_username() + " is admin!");
+				ans.set_htmlbody("Admin changed", "Now " + member.get_username() + " is admin!");
 			}
 		}
 		return ans;

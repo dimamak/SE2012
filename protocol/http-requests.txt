@@ -49,8 +49,11 @@ banning
 	
 set moderator
 	action = setmoderator
-	forumid, username, suspend(if 1 - suspends moderator with username from forumid) 
-	, till(if not set or 0 - forever)
+	forumid, username
+	
+suspend moderator
+	action = suspendmoder
+	forumid, username, till(if 0 - forever)
 	
 set admin
 	action = setadmin
