@@ -176,13 +176,14 @@ public class ActionHandler {
 	private static String getDiscussion(Message msg) {
 		String ans = "";
 
-		ans += "<ul>";
+		ans += "<ul id='" + msg.get_id().toString() + "'>";
 
 		ans += "<lh>";
-		ans += "<table border=1>";
-		ans += "<tr><th>" + msg.get_title() + "</th></tr>";
-		ans += "<tr><td>" + msg.get_body() + "</td></tr>";
-		ans += "</table>";
+		ans += "<ul style='border:1px solid black;margin:5px;'>";
+		ans += "<lh>" + msg.get_title() + "</lh>";
+		ans += "<li>" + msg.get_body() + "</li>";
+		ans += "<li>" + msg.get_publisher() + "</li>";
+		ans += "</ul>";
 		ans += "</lh>";
 
 		for (ForumObject m : msg.get_children()) {
@@ -367,12 +368,40 @@ public class ActionHandler {
 		return null;
 	}
 
-	public static HttpResponse setmoderator(ForumRunnable fr, HttpRequest inPkt) {
-		return null;
-	}
-
-	public static HttpResponse suspendmoder(ForumRunnable fr, HttpRequest inPkt) {
-		return null;
+	public static HttpResponse setmoderator(ForumRunnable forum,
+			HttpRequest inPkt) throws HttpException {
+		HttpResponse ans = new HttpResponse();
+		SubForum subf;
+		Session curSession = forum.get_session(UUID.fromString(inPkt
+				.get_cookies().get("SESSID")));
+		User moder = forum.get_user(inPkt.get_arguments().get("username"));
+		String suspend = inPkt.get_arguments().get("suspend");
+		Integer till = getIntArgument(inPkt,"till");
+		ForumObject forumobj = forum.get_fobjects().get(
+				getIntArgument(inPkt, "forumid"));
+ 
+		if (curSession.get_user() != forum.get_forum().get_admin())
+			throw new HttpException(401, "You are not allowed to add\remove moderator");
+		if (forumobj == null)
+			throw new HttpException(400, "Can find this subforum");
+		if (moder == null)
+			throw new HttpException(400, "Can find this user");
+		try {
+			subf = (SubForum) forumobj;
+		} catch (Exception e) {
+			throw new HttpException(400, "Given id is not subforum");
+		}
+		if(suspend.compareTo("1")==0){
+			subf.suspend_moderator(moder,till);
+			ans.set_htmlbody("Moderator suspended successfull",
+			"Moderator suspended successfull");
+		}
+		else{
+			subf.add_moderator(moder);
+			ans.set_htmlbody("Moderator added successfull",
+			"Moderator added successfull");
+		}
+		return ans;
 	}
 
 	public static HttpResponse setadmin(ForumRunnable fr, HttpRequest inPkt)
